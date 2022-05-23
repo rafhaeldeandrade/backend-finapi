@@ -29,6 +29,18 @@ app.post('/account', (req, res) => {
   return res.status(201).end()
 })
 
+app.get('/statement/:cpf', (req, res) => {
+  const { cpf } = req.params
+
+  const customer = customers.find((customer) => customer.cpf === cpf)
+
+  if (!customer) {
+    return res.status(404).json({ error: true, message: 'Customer not found' })
+  }
+
+  return res.status(200).json(customer.statement)
+})
+
 const PORT = process.env.PORT || 3333
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`)
