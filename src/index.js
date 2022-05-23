@@ -10,6 +10,16 @@ app.use(express.json())
 app.post('/account', (req, res) => {
   const { cpf, name } = req.body
 
+  const customerAlreadyExists = customers.some(
+    (customer) => customer.cpf === cpf
+  )
+
+  if (customerAlreadyExists) {
+    return res
+      .status(400)
+      .json({ error: true, message: 'Customer already exists' })
+  }
+
   const id = crypto.randomUUID()
 
   const newAccount = { cpf, name, id, statement: [] }
