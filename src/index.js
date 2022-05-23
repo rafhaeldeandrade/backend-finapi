@@ -17,6 +17,8 @@ function verifyIfAccountExists(req, res, next) {
     return res.status(404).json({ error: true, message: 'Customer not found' })
   }
 
+  req.customer = customer
+
   return next()
 }
 
@@ -43,13 +45,7 @@ app.post('/account', (req, res) => {
 })
 
 app.get('/statement/:cpf', verifyIfAccountExists, (req, res) => {
-  const { cpf } = req.params
-
-  const customer = customers.find((customer) => customer.cpf === cpf)
-
-  if (!customer) {
-    return res.status(404).json({ error: true, message: 'Customer not found' })
-  }
+  const { customer } = req
 
   return res.status(200).json(customer.statement)
 })
