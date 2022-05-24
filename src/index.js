@@ -69,10 +69,37 @@ app.get('/account', verifyIfAccountExists, (req, res) => {
   return res.status(200).json(customer)
 })
 
+app.delete('/account', verifyIfAccountExists, (req, res) => {
+  const { customer } = req
+
+  const userToBeDeleted = customers.findIndex(
+    (user) => user.cpf === customer.cpf
+  )
+
+  customers.splice(userToBeDeleted, 1)
+
+  return res.status(204).end()
+})
+
 app.get('/statement', verifyIfAccountExists, (req, res) => {
   const { customer } = req
 
   return res.status(200).json(customer.statement)
+})
+
+app.get('/statement/date', verifyIfAccountExists, (req, res) => {
+  const { customer } = req
+  const { date } = req.query
+
+  const dateFormat = new Date(date + ' 00:00')
+
+  const statements = customer.statement.filter(
+    (statement) =>
+      statement.created_at.toDateString() ===
+      new Date(dateFormat).toDateString()
+  )
+
+  return res.status(200).json(statements)
 })
 
 app.post('/deposit', verifyIfAccountExists, (req, res) => {
@@ -112,33 +139,6 @@ app.post('/withdraw', verifyIfAccountExists, (req, res) => {
   customer.statement.push(statementOperation)
 
   return res.status(201).send()
-})
-
-app.get('/statement/date', verifyIfAccountExists, (req, res) => {
-  const { customer } = req
-  const { date } = req.query
-
-  const dateFormat = new Date(date + ' 00:00')
-
-  const statements = customer.statement.filter(
-    (statement) =>
-      statement.created_at.toDateString() ===
-      new Date(dateFormat).toDateString()
-  )
-
-  return res.status(200).json(statements)
-})
-
-app.delete('/account', verifyIfAccountExists, (req, res) => {
-  const { cpf } = req.query
-
-  const userToBeDeleted = customers.findIndex(
-    (customer) => customer.cpf === cpf
-  )
-
-  customers.splice(userToBeDeleted, 1)
-
-  return res.status(204).end()
 })
 
 const PORT = process.env.PORT || 3333
