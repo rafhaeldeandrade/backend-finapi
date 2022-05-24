@@ -50,6 +50,23 @@ app.get('/statement/:cpf', verifyIfAccountExists, (req, res) => {
   return res.status(200).json(customer.statement)
 })
 
+app.post('/deposit', verifyIfAccountExists, (req, res) => {
+  const { description, amount } = req.body
+
+  const { customer } = req
+
+  const statementOperation = {
+    description,
+    amount,
+    created_at: new Date(),
+    type: 'credit'
+  }
+
+  customer.statement.push(statementOperation)
+
+  return res.status(201).send()
+})
+
 const PORT = process.env.PORT || 3333
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`)
