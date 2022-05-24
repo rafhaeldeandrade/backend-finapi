@@ -9,7 +9,7 @@ app.use(express.json())
 
 // Middleware
 function verifyIfAccountExists(req, res, next) {
-  const { cpf } = req.params
+  const { cpf } = req.headers
 
   const customer = customers.find((customer) => customer.cpf === cpf)
 
@@ -54,7 +54,16 @@ app.post('/account', (req, res) => {
   return res.status(201).end()
 })
 
-app.get('/statement/:cpf', verifyIfAccountExists, (req, res) => {
+app.put('/account', verifyIfAccountExists, (req, res) => {
+  const { name } = req.body
+  const { customer } = req
+
+  customer.name = name
+
+  return res.status(201).send()
+})
+
+app.get('/statement', verifyIfAccountExists, (req, res) => {
   const { customer } = req
 
   return res.status(200).json(customer.statement)
